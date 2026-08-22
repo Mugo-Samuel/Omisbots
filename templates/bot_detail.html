@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ bot.name }} | Omisbots</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --line: #e2e8f0;
+        --line-strong: #cbd5e1;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #7c3aed;
+        --primary-soft: #f3e8ff;
+        --success: #16a34a;
+        --success-soft: #dcfce7;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: #ffffff;
+        border-right: 1px solid var(--line);
+        padding: 22px 18px;
+      }
+
+      .brand {
+        display: inline-block;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text);
+        text-decoration: none;
+        margin-bottom: 28px;
+      }
+
+      .nav {
+        display: grid;
+        gap: 8px;
+      }
+
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+      }
+
+      .nav a.active {
+        background: var(--primary-soft);
+        color: var(--primary);
+      }
+
+      .main {
+        padding: 22px 28px 42px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0 22px;
+        gap: 16px;
+      }
+
+      .search {
+        flex: 1;
+        max-width: 560px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 15px;
+        color: var(--muted);
+      }
+
+      .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 8px 12px;
+      }
+
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .stat-label {
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07rem;
+        font-size: 0.72rem;
+      }
+
+      .stat-value {
+        margin-top: 8px;
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 22px;
+      }
+
+      .panel {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel h2 {
+        margin-top: 0;
+        margin-bottom: 18px;
+      }
+
+      .bot-meta {
+        display: grid;
+        gap: 14px;
+      }
+
+      .meta-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .meta-row span:first-child {
+        color: var(--muted);
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--success-soft);
+        color: var(--success);
+        font-weight: 700;
+        font-size: 0.72rem;
+      }
+
+      .chat-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .chat-item {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        background: var(--panel-soft);
+      }
+
+      .chat-item strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .chat-item p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      @media (max-width: 900px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/dashboard">Omisbots</a>
+        <nav class="nav" aria-label="Sidebar navigation">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/dashboard/leads">Leads</a>
+          <a href="/dashboard/conversations">Conversations</a>
+          <a href="/dashboard/analytics">Analytics</a>
+          <a href="/dashboard/knowledge-base">Knowledge Base</a>
+          <a href="/dashboard/settings">Settings</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="search">Search bots, leads, conversations</div>
+          <div class="user-menu">
+            <div class="avatar">MS</div>
+            <div>
+              <strong>Mugo</strong><br>
+              <small style="color: var(--muted);">Owner</small>
+            </div>
+          </div>
+        </header>
+
+        <div class="page-header">
+          <div>
+            <p style="margin:0 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08rem; font-size: 0.72rem;">Bot overview</p>
+            <h1>{{ bot.name }}</h1>
+          </div>
+          <a class="button" href="/dashboard">Back to dashboard</a>
+        </div>
+
+        <section class="overview-grid">
+          <div class="stat-card">
+            <div class="stat-label">Bot ID</div>
+            <div class="stat-value">{{ bot.botId }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Template</div>
+            <div class="stat-value">{{ bot.template }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Status</div>
+            <div class="stat-value"><span class="badge">{{ bot.status }}</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Responses</div>
+            <div class="stat-value">{{ bot.responses }}</div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="panel">
+            <h2>Bot details</h2>
+            <div class="bot-meta">
+              <div class="meta-row">
+                <span>Website</span>
+                <strong>{{ bot.website }}</strong>
+              </div>
+              <div class="meta-row">
+                <span>Owner team</span>
+                <strong>{{ bot.team }}</strong>
+              </div>
+              <div class="meta-row">
+                <span>Primary intent</span>
+                <strong>{{ bot.intent }}</strong>
+              </div>
+              <div class="meta-row">
+                <span>Updated</span>
+                <strong>{{ bot.updated }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Recent conversations</h2>
+            <div class="chat-list">
+              {% for item in conversations %}
+              <div class="chat-item">
+                <strong>Visitor:</strong>
+                <p>{{ item.question }}</p>
+                <br>
+                <strong>Bot:</strong>
+                <p>{{ item.answer }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

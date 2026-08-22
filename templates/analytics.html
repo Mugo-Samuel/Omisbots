@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics | Omisbots</title>
+    <style>
+      :root { --bg:#f5f7fb; --panel:#fff; --line:#e2e8f0; --muted:#64748b; --text:#0f172a; --primary:#7c3aed; --primary-soft:#f3e8ff; --success:#16a34a; --shadow:0 10px 30px rgba(15,23,42,.06); }
+      * { box-sizing:border-box; }
+      body { margin:0; font-family:Inter,Arial,sans-serif; background:var(--bg); color:var(--text); }
+      .shell { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+      .sidebar { background:#fff; border-right:1px solid var(--line); padding:22px 18px; }
+      .brand { display:inline-block; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom:28px; }
+      .nav { display:grid; gap:8px; }
+      .nav a { display:flex; align-items:center; gap:10px; color:var(--muted); text-decoration:none; padding:10px 12px; border-radius:12px; font-weight:600; }
+      .nav a.active { background:var(--primary-soft); color:var(--primary); }
+      .main { padding:22px 28px 42px; }
+      .topbar { display:flex; justify-content:space-between; align-items:center; padding:10px 0 22px; gap:16px; }
+      .search { flex:1; max-width:560px; background:white; border:1px solid var(--line); border-radius:14px; padding:12px 15px; color:var(--muted); }
+      .user-menu { display:flex; align-items:center; gap:12px; background:white; border:1px solid var(--line); border-radius:14px; padding:8px 12px; }
+      .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#ec4899); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; }
+      .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+      h1 { margin:0; font-size:2rem; }
+      .button { display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border:none; border-radius:12px; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; font-weight:700; text-decoration:none; }
+      .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:18px; margin-bottom:24px; }
+      .stat-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px 20px; box-shadow:var(--shadow); }
+      .label { color:var(--muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08rem; }
+      .value { margin-top:8px; font-size:1.9rem; font-weight:800; }
+      .panel { background:#fff; border:1px solid var(--line); border-radius:20px; padding:20px; box-shadow:var(--shadow); }
+      .bars { display:flex; align-items:flex-end; gap:12px; height:180px; margin-top:18px; }
+      .bar { flex:1; background:linear-gradient(180deg,#c4b5fd,#7c3aed); border-radius:12px 12px 0 0; min-height:20px; position:relative; }
+      .bar span { position:absolute; bottom:-28px; left:50%; transform:translateX(-50%); color:var(--muted); font-size:0.75rem; }
+      .channel-list { display:grid; gap:10px; margin-top:18px; }
+      .channel-item { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); }
+      .dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:10px; background:#7c3aed; }
+      @media (max-width:900px){ .shell{grid-template-columns:1fr;} .sidebar{border-right:none;border-bottom:1px solid var(--line);} .topbar{flex-wrap:wrap;} }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/dashboard">Omisbots</a>
+        <nav class="nav" aria-label="Sidebar navigation">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/dashboard/leads">Leads</a>
+          <a href="/dashboard/conversations">Conversations</a>
+          <a href="/dashboard/analytics" class="active">Analytics</a>
+          <a href="/dashboard/knowledge-base">Knowledge Base</a>
+          <a href="/dashboard/settings">Settings</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="search">Search analytics</div>
+          <div class="user-menu">
+            <div class="avatar">MS</div>
+            <div><strong>Mugo</strong><br><small style="color:var(--muted);">Owner</small></div>
+          </div>
+        </header>
+        <div class="page-header">
+          <h1>Analytics</h1>
+          <a class="button" href="/dashboard">Back to dashboard</a>
+        </div>
+        <section class="stats-grid">
+          <div class="stat-card"><div class="label">Revenue</div><div class="value">{{ analytics.revenue }}</div></div>
+          <div class="stat-card"><div class="label">Conversion</div><div class="value">{{ analytics.conversion }}</div></div>
+          <div class="stat-card"><div class="label">Response time</div><div class="value">{{ analytics.response_time }}</div></div>
+          <div class="stat-card"><div class="label">Active bots</div><div class="value">{{ analytics.active_bots }}</div></div>
+        </section>
+        <section class="panel">
+          <h2>Lead growth</h2>
+          <div class="bars">
+            {% for value in analytics.weekly_leads %}
+              <div class="bar" style="height: {{ (value / 35) * 100 }}%;"><span>{{ value }}</span></div>
+            {% endfor %}
+          </div>
+        </section>
+        <section class="panel" style="margin-top:22px;">
+          <h2>Channel mix</h2>
+          <div class="channel-list">
+            {% for channel in analytics.channel_mix %}
+            <div class="channel-item"><span><span class="dot"></span>{{ channel.label }}</span><strong>{{ channel.value }}%</strong></div>
+            {% endfor %}
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

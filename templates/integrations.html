@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrations | Omisbots</title>
+    <style>
+      :root { --bg:#f5f7fb; --panel:#fff; --line:#e2e8f0; --muted:#64748b; --text:#0f172a; --primary:#7c3aed; --primary-soft:#f3e8ff; --success:#16a34a; --warning:#d97706; --shadow:0 10px 30px rgba(15,23,42,.06); }
+      * { box-sizing:border-box; }
+      body { margin:0; font-family:Inter,Arial,sans-serif; background:var(--bg); color:var(--text); }
+      .shell { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+      .sidebar { background:#fff; border-right:1px solid var(--line); padding:22px 18px; }
+      .brand { display:inline-block; font-size:1.5rem; font-weight:800; color:var(--text); text-decoration:none; margin-bottom:28px; }
+      .nav { display:grid; gap:8px; }
+      .nav a { display:flex; align-items:center; gap:10px; color:var(--muted); text-decoration:none; padding:10px 12px; border-radius:12px; font-weight:600; }
+      .nav a.active { background:var(--primary-soft); color:var(--primary); }
+      .main { padding:22px 28px 42px; }
+      .topbar { display:flex; justify-content:space-between; align-items:center; padding:10px 0 22px; gap:16px; }
+      .search { flex:1; max-width:560px; background:white; border:1px solid var(--line); border-radius:14px; padding:12px 15px; color:var(--muted); }
+      .user-menu { display:flex; align-items:center; gap:12px; background:white; border:1px solid var(--line); border-radius:14px; padding:8px 12px; }
+      .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#ec4899); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; }
+      .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+      h1 { margin:0; font-size:2rem; }
+      .button { display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border:none; border-radius:12px; background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; font-weight:700; text-decoration:none; }
+      .panel { background:#fff; border:1px solid var(--line); border-radius:20px; padding:20px; box-shadow:var(--shadow); }
+      .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; }
+      .card { border:1px solid var(--line); border-radius:16px; padding:16px; background:#f8fafc; }
+      .pill { display:inline-flex; padding:6px 10px; border-radius:999px; font-size:.72rem; font-weight:700; }
+      .connected { background:#ecfdf5; color:var(--success); }
+      .pending { background:#fef3c7; color:var(--warning); }
+      .draft { background:#f1f5f9; color:var(--muted); }
+      @media (max-width:900px){ .shell{grid-template-columns:1fr;} .sidebar{border-right:none;border-bottom:1px solid var(--line);} .topbar{flex-wrap:wrap;} }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/dashboard">Omisbots</a>
+        <nav class="nav" aria-label="Sidebar navigation">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/dashboard/leads">Leads</a>
+          <a href="/dashboard/conversations">Conversations</a>
+          <a href="/dashboard/analytics">Analytics</a>
+          <a href="/dashboard/knowledge-base">Knowledge Base</a>
+          <a href="/dashboard/onboarding">Onboarding</a>
+          <a href="/dashboard/pricing">Pricing</a>
+          <a href="/dashboard/workspace">Workspace</a>
+          <a href="/dashboard/customers">Customers</a>
+          <a href="/dashboard/integrations" class="active">Integrations</a>
+          <a href="/dashboard/billing">Billing</a>
+          <a href="/dashboard/deployments">Deployments</a>
+          <a href="/dashboard/automations">Automations</a>
+          <a href="/dashboard/settings">Settings</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="search">Integration center</div>
+          <div class="user-menu">
+            <div class="avatar">MS</div>
+            <div><strong>Mugo</strong><br><small style="color:var(--muted);">Owner</small></div>
+          </div>
+        </header>
+        <div class="page-header">
+          <h1>Integrations</h1>
+          <a class="button" href="/dashboard">Back to dashboard</a>
+        </div>
+        <section class="panel">
+          <div class="grid">
+            {% for connector in connectors %}
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+                <strong>{{ connector.name }}</strong>
+                <span class="pill {{ connector.status.lower() }}">{{ connector.status }}</span>
+              </div>
+              <div style="color:var(--muted); margin-bottom:8px;">{{ connector.type }}</div>
+              <div style="line-height:1.6;">{{ connector.details }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

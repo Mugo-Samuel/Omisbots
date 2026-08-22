@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Omisbots Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --line: #e2e8f0;
+        --line-strong: #cbd5e1;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #7c3aed;
+        --primary-soft: #f3e8ff;
+        --success: #16a34a;
+        --success-soft: #dcfce7;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .dashboard-shell {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 18px;
+        margin-bottom: 28px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .brand {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.5rem;
+      }
+
+      .nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .nav a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 18px;
+        margin-bottom: 26px;
+      }
+
+      .stat-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .stat-label {
+        color: var(--muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-top: 8px;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 22px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+
+      .panel-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(124, 58, 237, 0.2);
+      }
+
+      .bot-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .bot-table th, .bot-table td {
+        text-align: left;
+        padding: 14px 8px;
+        border-bottom: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .bot-table th {
+        color: var(--muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06rem;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        background: var(--success-soft);
+        color: var(--success);
+      }
+
+      .badge.draft {
+        background: #f1f5f9;
+        color: var(--muted);
+      }
+
+      .template-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .template-card {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel-soft);
+      }
+
+      .template-card strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .template-card small {
+        color: var(--muted);
+      }
+
+      form {
+        display: grid;
+        gap: 12px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      input, select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--line-strong);
+        background: #fff;
+        color: var(--text);
+        box-sizing: border-box;
+      }
+
+      input:focus, select:focus {
+        outline: 2px solid rgba(124, 58, 237, 0.15);
+        border-color: var(--primary);
+      }
+
+      .inline-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      @media (max-width: 800px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="dashboard-shell">
+      <header class="topbar">
+        <a class="brand" href="/">Omisbots</a>
+        <nav class="nav" aria-label="Main navigation">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/dashboard/leads">Leads</a>
+          <a href="/dashboard/conversations">Conversations</a>
+          <a href="/dashboard/analytics">Analytics</a>
+          <a href="/dashboard/knowledge-base">Knowledge Base</a>
+          <a href="/dashboard/onboarding">Onboarding</a>
+          <a href="/dashboard/pricing">Pricing</a>
+          <a href="/dashboard/workspace">Workspace</a>
+          <a href="/dashboard/customers">Customers</a>
+          <a href="/dashboard/activity">Activity</a>
+          <a href="/dashboard/tasks">Tasks</a>
+          <a href="/dashboard/reports">Reports</a>
+          <a href="/dashboard/content">Content</a>
+          <a href="/dashboard/campaigns">Campaigns</a>
+          <a href="/dashboard/integrations">Integrations</a>
+          <a href="/dashboard/billing">Billing</a>
+          <a href="/dashboard/deployments">Deployments</a>
+          <a href="/dashboard/automations">Automations</a>
+          <a href="/dashboard/settings">Settings</a>
+        </nav>
+      </header>
+
+      <section class="hero-grid">
+        <div class="stat-card">
+          <div class="stat-label">Bots</div>
+          <div class="stat-value">{{ stats.bots }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Responses</div>
+          <div class="stat-value">{{ stats.responses }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Live</div>
+          <div class="stat-value">{{ stats.live }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Leads</div>
+          <div class="stat-value">{{ stats.leads }}</div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>My Bots</h2>
+            <a class="button" href="#create-bot">Create bot</a>
+          </div>
+
+          <table class="bot-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Template</th>
+                <th>Website</th>
+                <th>Status</th>
+                <th>Responses</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bot in bots %}
+              <tr>
+                <td><a href="/dashboard/bot/{{ bot.id }}" style="color: var(--text); text-decoration: none; font-weight: 700;">{{ bot.name }}</a></td>
+                <td>{{ bot.template }}</td>
+                <td>{{ bot.website }}</td>
+                <td>
+                  {% if bot.status == 'Live' %}
+                  <span class="badge">Live</span>
+                  {% else %}
+                  <span class="badge draft">Draft</span>
+                  {% endif %}
+                </td>
+                <td>{{ bot.responses }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="panel" id="create-bot">
+          <div class="panel-header">
+            <h2>Create Your Bot</h2>
+          </div>
+
+          <form action="/dashboard/create-bot" method="post">
+            <label>
+              <span>Bot name</span>
+              <input name="name" type="text" placeholder="Northview Clinic Bot" required />
+            </label>
+
+            <label>
+              <span>Business website</span>
+              <input name="website" type="url" placeholder="https://examplebusiness.com" required />
+            </label>
+
+            <label>
+              <span>Template</span>
+              <select name="template">
+                {% for template in templates %}
+                <option value="{{ template.name }}">{{ template.name }}</option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <div class="inline-actions">
+              <button class="button" type="submit">Create bot</button>
+            </div>
+          </form>
+        </aside>
+      </section>
+
+      <section class="panel" style="margin-top: 24px;">
+        <div class="panel-header">
+          <h2>Bot Templates</h2>
+        </div>
+        <div class="template-list">
+          {% for template in templates %}
+          <div class="template-card">
+            <strong>{{ template.name }}</strong>
+            <small>{{ template.description }}</small>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="panel" style="margin-top: 24px;">
+        <div class="panel-header">
+          <h2>Scaling roadmap</h2>
+        </div>
+        <div class="template-list">
+          <div class="template-card">
+            <strong>Phase 1: Website bots</strong>
+            <small>Deploy and customize bots on business websites with branded widgets and templates.</small>
+          </div>
+          <div class="template-card">
+            <strong>Phase 2: Knowledge base + AI</strong>
+            <small>Turn websites into a business knowledge base and add retrieval-based answers later.</small>
+          </div>
+          <div class="template-card">
+            <strong>Phase 3: Conversations + leads</strong>
+            <small>Capture leads, store chats, and route valuable conversations to humans or CRM flows.</small>
+          </div>
+          <div class="template-card">
+            <strong>Phase 4: WhatsApp + Telegram + API</strong>
+            <small>Expand the same bot logic across the channels customers already use every day.</small>
+          </div>
+          <div class="template-card">
+            <strong>Phase 5: Multi-tenant SaaS</strong>
+            <small>Support teams, agencies, billing, analytics, and white-label deployments at scale.</small>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
