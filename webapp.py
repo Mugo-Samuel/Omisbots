@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 
@@ -65,6 +66,37 @@ BOT_STORAGE = [
         "intent": "Answer FAQs and route issues to a human agent",
     },
 ]
+
+STORE_PATH = os.getenv("OMISBOTS_STORE_PATH", os.path.join(os.path.dirname(__file__), "data", "omisbots_bots.json"))
+
+
+def load_bots(initial_bots):
+    if not os.path.exists(STORE_PATH):
+        return list(initial_bots)
+
+    try:
+        with open(STORE_PATH, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (OSError, ValueError):
+        return list(initial_bots)
+
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict) and isinstance(payload.get("bots"), list):
+        return payload["bots"]
+    return list(initial_bots)
+
+
+def save_bots():
+    directory = os.path.dirname(STORE_PATH)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+
+    with open(STORE_PATH, "w", encoding="utf-8") as handle:
+        json.dump(BOT_STORAGE, handle, indent=2)
+
+
+BOT_STORAGE = load_bots(BOT_STORAGE)
 
 LEADS_STORAGE = [
     {
@@ -408,6 +440,7 @@ def create_bot():
         "intent": "Create a bot tailored to your business workflow",
     }
     BOT_STORAGE.insert(0, bot)
+    save_bots()
     return redirect(url_for("bot_detail", bot_id=bot["id"]))
 
 

@@ -1,0 +1,14 @@
+name: omisbots
+services:
+  - name: omisbots-web
+    type: web
+    env: docker
+    ports:
+      - port: 8000
+        protocol: TCP
+    routes:
+      - path: /
+    build:
+      type: docker
+      dockerfile: Dockerfile
+      context: .

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "bot-20260822173327",
+    "name": "Growth Pilot",
+    "template": "Sales Assistant",
+    "website": "https://pilot.example.com",
+    "status": "Draft",
+    "responses": 0,
+    "updated": "just now",
+    "team": "New Team",
+    "botId": "BOT-20260822173327",
+    "intent": "Create a bot tailored to your business workflow"
+  },
+  {
+    "id": "bot-1001",
+    "name": "Milo Sales Bot",
+    "template": "Sales Assistant",
+    "website": "https://examplebusiness.com",
+    "status": "Live",
+    "responses": 248,
+    "updated": "2h ago",
+    "team": "Sales Team",
+    "botId": "BOT-1001",
+    "intent": "Qualify leads and recommend the right package"
+  },
+  {
+    "id": "bot-1002",
+    "name": "CareDesk Support",
+    "template": "Customer Support",
+    "website": "https://support.examplebusiness.com",
+    "status": "Draft",
+    "responses": 94,
+    "updated": "1d ago",
+    "team": "Support Team",
+    "botId": "BOT-1002",
+    "intent": "Answer FAQs and route issues to a human agent"
+  }
+]
