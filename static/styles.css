@@ -1123,7 +1123,7 @@ body { background: #f3f5f6; color: #20252b; }
 @media (max-width: 580px) { .mason-scene { position: relative; top: auto; left: auto; width: 100%; height: 120px; margin-bottom: 24px; transform: none; }.mason-word { gap: 2px; }.mason-word span { width: clamp(25px, 9vw, 36px); height: 39px; font-size: 20px; }.mason-status { right: 0; font-size: 10px; }.mason-label { font-size: 8px; } }
 
 /* Warm beige public canvas with readable charcoal type */
-.landing-page { background: #BAC8B1; color: #24201b; }
+.landing-page { background: #F9F6EE; color: #24201b; }
 .landing-page .bg-orbs span { opacity: .07; }
 .landing-page .topbar, .landing-page .topbar.is-scrolled { background: rgba(186,200,177,.94); border-color: rgba(36,32,27,.18); }
 .landing-page .brand, .landing-page .nav-links a, .landing-page .hero h1, .landing-page .section-heading h2, .landing-page .architecture-intro h1, .landing-page .architecture-intro h1 span, .landing-page .section-heading h2 span, .landing-page .eyebrow { color: #24201b; }
