@@ -6,7 +6,7 @@
   <title>Omisbots | Chatbots & Automations</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   
   <style>
@@ -220,74 +220,90 @@
 
   </style>
 </head>
-<body>
+<body class="landing-page">
   <div id="vanta-globe" aria-hidden="true"></div>
 
   <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
 
   <main class="site-shell">
     <nav class="topbar" aria-label="Primary" id="topbar">
-      <a class="brand" href="#home">Omisbots</a>
+      <a class="brand" href="#home"><span class="brand-mark">O</span>Omisbots</a>
       <div class="nav-links">
-        <a href="#services">Services</a>
-        <a href="#demo">Demo Bots</a>
-        <a href="mailto:automatebots.io@gmail.com">Contact</a>
+        <a href="#home">Home</a>
+        <a href="#agents">AI Agents</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#workflow">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="{{ url_for('auth') }}">Log in</a>
+        <a class="button button--primary" href="{{ url_for('auth', mode='signup') }}">Get started</a>
       </div>
     </nav>
 
-    <section class="hero" id="home">
-      <div class="hero__copy">
-        <p class="eyebrow fade-up" style="animation-delay: 0.05s;">Chatbots + workflow automations</p>
-        <h1 id="heroTitle">We build useful chatbots for real business work.</h1>
-        <p class="hero__text fade-up" style="animation-delay: 0.3s;">
-          We develop WhatsApp, Telegram, and website chatbots that answer customers,
-          qualify leads, book appointments, collect details, and connect to simple automations.
-        </p>
-
-        <div class="hero__actions fade-up" style="animation-delay: 0.4s;">
-          <a class="button button--primary" href="mailto:automatebots.io@gmail.com">Contact us</a>
-          <a class="button button--secondary" href="#demo">View chatbot demo</a>
+    <section class="architecture-hero" id="home" aria-label="Omisbots AI architecture">
+      <div class="mason-scene" aria-label="Mason robot building the Omisbots name">
+        <div class="mason-label"><span class="live-dot"></span> OMISBOTS SYSTEM INITIALIZING</div>
+        <div class="mason-word" id="masonWord" aria-label="OMISBOTS">
+          <span data-letter="O">O</span><span data-letter="M">M</span><span data-letter="I">I</span><span data-letter="S">S</span><span data-letter="B">B</span><span data-letter="O">O</span><span data-letter="T">T</span><span data-letter="S">S</span>
         </div>
-
-        <div class="hero__meta fade-up" id="pricing" style="animation-delay: 0.5s;">
-          <span>Email: <a href="mailto:automatebots.io@gmail.com">automatebots.io@gmail.com</a></span>
-        </div>
+        <div class="mason-floor"></div>
+        <div class="mason-robot" id="masonRobot" aria-hidden="true"><i class="robot-eye"></i><i class="robot-eye"></i><b></b></div>
+        <div class="mason-status" id="masonStatus">Picking first block...</div>
       </div>
-
-      <!-- NEW: Interactive smartphone envelope container -->
-      <div class="phone-mockup-wrapper fade-up" style="animation-delay: 0.4s;">
-        <div class="phone-mockup">
-          <!-- Status indicators -->
-          <div class="phone-status-bar">
-            <span>9:41</span>
-            <div class="right-icons">
-              <span>5G</span>
-            </div>
-          </div>
-
-          <aside class="front-chat" aria-label="Omisbots assistant">
-            <div class="front-chat__bar">
-              <span class="status-dot"></span>
-              <div class="bot-avatar" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,18C8.69,18 6,15.31 6,12C6,10.93 6.28,9.93 6.77,9.07L8.25,10.55C8.09,11 8,11.5 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12C16,11.5 15.91,11 15.75,10.55L17.23,9.07C17.72,9.93 18,10.93 18,12C18,15.31 15.31,18 12,18Z"/>
-                </svg>
-              </div>
-              <span style="font-weight: 600; color: #ffffff;">Omisbots Assistant</span>
-            </div>
-            
-            <div class="front-chat__messages" id="labChatLog" aria-live="polite"></div>
-            
-            <form class="front-composer" id="labComposer">
-              <input id="labMessageInput" type="text" autocomplete="off" placeholder="Ask about bots, automation..." />
-              <button type="submit">Ask</button>
-            </form>
-          </aside>
-
-          <!-- Bottom physical home gesture bar -->
-          <div class="phone-home-indicator"></div>
-        </div>
+      <div class="architecture-intro">
+        <p class="eyebrow">AI operating system / online now</p>
+        <h1 id="heroTitle">Build bots.<br />Deploy agents.<br /><span>Automate everything.</span></h1>
+        <p>Omisbots connects AI bots, intelligent agents and business automations into one powerful system.</p>
+        <div class="hero__actions"><a class="button button--primary" href="{{ url_for('auth', mode='signup') }}">Build your bot ↗</a><a class="button button--secondary" href="#workflow">Explore automations ↓</a></div>
       </div>
+      <div class="architecture-map">
+        <div class="hub-node"><i class="hub-pulse"></i><strong>OMISBOTS</strong><small>INTELLIGENCE HUB</small></div>
+        <div class="hub-stem"></div>
+        <div class="pillar-grid">
+          <article class="architecture-pillar pillar-bots" tabindex="0" data-architecture="bots"><div class="pillar-heading"><span>01</span><h2>BOTS</h2><b>↗</b></div><p>Meet customers wherever they are.</p><div class="capability-list"><span>Website</span><span>WhatsApp</span><span>Telegram</span></div><div class="pillar-tooltip">Customer-facing AI bots that engage customers wherever they are.</div></article>
+          <article class="architecture-pillar pillar-agents" tabindex="0" data-architecture="agents"><div class="pillar-heading"><span>02</span><h2>AI AGENTS</h2><b>↗</b></div><p>Think, remember and act.</p><div class="capability-list"><span>AI / RAG</span><span>Tools</span><span>Memory</span></div><div class="pillar-tooltip">Intelligent agents that reason, remember and use tools to get work done.</div></article>
+          <article class="architecture-pillar pillar-automations" tabindex="0" data-architecture="automations"><div class="pillar-heading"><span>03</span><h2>AUTOMATIONS</h2><b>↗</b></div><p>Make work happen automatically.</p><div class="capability-list"><span>n8n</span><span>Gmail</span><span>CRM</span><span>WhatsApp</span></div><div class="pillar-tooltip">Connect your business apps and automate repetitive workflows.</div></article>
+        </div>
+        <div class="branch-lines"><i></i><i></i><i></i></div>
+        <div class="customer-node"><span class="customer-icon">✦</span><div><small>FINAL DESTINATION</small><strong>BUSINESS CUSTOMER</strong></div><em>More leads · Faster support · Smarter operations</em></div>
+      </div>
+      <aside class="activity-panel"><div class="activity-header"><span><i class="live-dot"></i> AI ACTIVE</span><small>LIVE FEED</small></div><div class="activity-log" id="architectureActivity"><p>Reading incoming email...</p><p>Identifying priority...</p><p>Updating CRM...</p><p>Sending WhatsApp response...</p><p>Workflow completed ✓</p></div></aside>
+    </section>
+
+    <section class="work-section reveal" id="solutions" aria-label="AI work dashboard">
+      <div class="section-heading section-heading--split">
+        <div><p class="eyebrow">Watch AI work</p><h2>Don't just automate.<br /><span>Watch AI work.</span></h2></div>
+        <p>Every conversation becomes a useful action. Your AI workforce keeps the important work moving while your team focuses on what comes next.</p>
+      </div>
+      <div class="work-dashboard">
+        <div class="dashboard-topline"><span><i class="live-dot"></i> Live operations</span><span>Last synced just now <b>↗</b></span></div>
+        <div class="metric-grid">
+          <article class="metric-card"><span class="metric-icon violet">◌</span><small>Conversations handled</small><strong data-count="1284">0</strong><em>+18.4% this week</em></article>
+          <article class="metric-card"><span class="metric-icon mint">⌁</span><small>Leads captured</small><strong data-count="347">0</strong><em>+12.8% this week</em></article>
+          <article class="metric-card"><span class="metric-icon amber">✦</span><small>Automations running</small><strong data-count="96">0</strong><em>All systems operational</em></article>
+          <article class="metric-card metric-live"><span class="metric-icon pink">◒</span><small>AI availability</small><strong>24<span>/7</span></strong><em>Always on, always learning</em></article>
+        </div>
+        <div class="activity-stream"><div class="stream-heading"><b>Agent activity</b><span>View all activity →</span></div><div class="stream-row"><i class="agent-avatar">S</i><span><b>Sales Agent</b> qualified a new lead from WhatsApp</span><time>12 sec ago</time><strong>✓</strong></div><div class="stream-row"><i class="agent-avatar mint">C</i><span><b>Care Agent</b> resolved a support ticket</span><time>48 sec ago</time><strong>✓</strong></div><div class="stream-row"><i class="agent-avatar amber">B</i><span><b>Booking Agent</b> confirmed an appointment</span><time>2 min ago</time><strong>✓</strong></div></div>
+      </div>
+    </section>
+
+    <section class="agents-section reveal" id="agents" aria-label="AI agents">
+      <div class="section-heading"><p class="eyebrow">Your digital team</p><h2>One platform.<br /><span>Every kind of worker.</span></h2></div>
+      <div class="agent-grid">
+        <article class="agent-card"><div class="agent-figure figure-violet">S<span>+</span></div><p class="agent-label">01 / Revenue</p><h3>Sales Agent</h3><p>Captures leads, qualifies customers, and sends follow-ups before interest fades.</p><a href="#demo">Explore agent <span>↗</span></a></article>
+        <article class="agent-card"><div class="agent-figure figure-mint">C<span>+</span></div><p class="agent-label">02 / Support</p><h3>Customer Support Agent</h3><p>Answers FAQs, resolves common issues, and escalates complex requests with context.</p><a href="#demo">Explore agent <span>↗</span></a></article>
+        <article class="agent-card"><div class="agent-figure figure-amber">B<span>+</span></div><p class="agent-label">03 / Operations</p><h3>Booking Agent</h3><p>Handles appointments, collects customer information, and sends confirmations.</p><a href="#demo">Explore agent <span>↗</span></a></article>
+        <article class="agent-card agent-card-custom"><div class="agent-figure figure-pink">✦</div><p class="agent-label">04 / Your workflow</p><h3>Custom AI Agent</h3><p>Built around the specific process that makes your business different.</p><a href="{{ url_for('auth', mode='signup') }}">Build yours <span>↗</span></a></article>
+      </div>
+    </section>
+
+    <section class="channels-section reveal" aria-label="Omnichannel automation">
+      <div class="section-heading section-heading--split"><div><p class="eyebrow">One brain / every channel</p><h2>Your business,<br /><span>in sync everywhere.</span></h2></div><p>One intelligent layer connects the places your customers talk to the systems your business runs on.</p></div>
+      <div class="channel-map"><div class="channel-node whatsapp"><b>◉</b><span>WhatsApp</span></div><div class="channel-node website"><b>⌁</b><span>Website</span></div><div class="ai-brain"><span>O</span><small>OMISBOTS AI</small></div><div class="channel-node telegram"><b>➤</b><span>Telegram</span></div><div class="channel-node systems"><b>▦</b><span>Business systems</span></div><i class="data-line line-a"></i><i class="data-line line-b"></i><i class="data-line line-c"></i><i class="data-line line-d"></i></div>
+    </section>
+
+    <section class="workflow-section reveal" id="workflow" aria-label="Automation workflow">
+      <div class="section-heading"><p class="eyebrow">From message to action</p><h2>Every message has<br /><span>a next move.</span></h2></div>
+      <div class="workflow-steps"><article><span>01</span><b>Customer<br />message</b></article><i>↓</i><article><span>02</span><b>AI<br />understands</b></article><i>↓</i><article><span>03</span><b>AI<br />responds</b></article><i>↓</i><article><span>04</span><b>AI takes<br />action</b></article><i>↓</i><article class="result"><span>05</span><b>Business gets<br />result</b></article></div>
     </section>
 
     <section class="services reveal" id="services" aria-label="Services">
@@ -371,18 +387,33 @@
       </div>
     </section>
 
-    <section class="contact-strip reveal" aria-label="Contact">
-      <p>Ready to discuss a chatbot or automation?</p>
-      <a href="mailto:automatebots.io@gmail.com">automatebots.io@gmail.com</a>
+    <section class="contact-strip final-cta reveal" id="pricing" aria-label="Start building">
+      <div><p class="eyebrow">The future of work is already online</p><h2>Your next employee<br /><span>doesn't sleep.</span></h2><p>Deploy AI agents that work around the clock, respond instantly and automate the repetitive work holding your business back.</p></div>
+      <a class="button button--primary" href="{{ url_for('auth', mode='signup') }}">Start building with Omisbots <span>→</span></a>
     </section>
 
     <footer class="site-footer" aria-label="Footer">
-      <p>Powered by Omisdevs</p>
+      <div><a class="brand" href="#home"><span class="brand-mark">O</span>Omisbots</a><p>AI workers for the work that matters.</p></div>
+      <div class="footer-links"><a href="#agents">AI Agents</a><a href="#solutions">Solutions</a><a href="#workflow">How it works</a><a href="mailto:automatebots.io@gmail.com">Contact</a></div>
       <p>&copy; 2026 Omisbots. All rights reserved.</p>
     </footer>
   </main>
 
-  <script src="{{ url_for('static', filename='site-motion.js') }}"></script>
+  <div class="assistant-dock">
+    <section class="assistant-panel" id="assistantPanel" aria-label="Omisbots assistant" aria-hidden="true">
+      <header class="assistant-panel__header">
+        <div><span class="live-dot"></span><strong>Omisbots assistant</strong><small>Online and ready to help</small></div>
+        <button class="assistant-close" id="assistantClose" type="button" aria-label="Close assistant">×</button>
+      </header>
+      <div class="assistant-messages" id="assistantMessages" aria-live="polite"><div class="assistant-message assistant-message--bot">Hi, I'm the Omisbots assistant. Ask me what we build, how agents work, or how to get started.</div></div>
+      <form class="assistant-form" id="assistantForm">
+        <input id="assistantInput" type="text" autocomplete="off" placeholder="Ask about Omisbots..." aria-label="Message the Omisbots assistant" required />
+        <button type="submit" aria-label="Send message">↑</button>
+      </form>
+    </section>
+    <button class="assistant-dongle" id="assistantToggle" type="button" aria-label="Open Omisbots assistant" aria-expanded="false"><span class="assistant-dongle__signal"></span><span class="assistant-dongle__face">O</span><small>Ask AI</small></button>
+  </div>
+
   <script src="{{ url_for('static', filename='app.js') }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>

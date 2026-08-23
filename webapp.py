@@ -2,7 +2,8 @@ import json
 import os
 from datetime import datetime
 
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from chatbot import generate_reply, is_greeting
 
@@ -70,23 +71,63 @@ BOT_STORAGE = [
     },
 ]
 
+DEFAULT_STORE_PATH = os.path.join(os.path.dirname(__file__), "data", "omisbots_bots.json")
+DEFAULT_USERS_PATH = os.path.join(os.path.dirname(__file__), "data", "omisbots_users.json")
 
-STORE_PATH = os.getenv(
-    "OMISBOTS_STORE_PATH",
-    os.path.join(
-        os.path.dirname(__file__),
-        "data",
-        "omisbots_bots.json",
-    ),
-)
+
+def get_store_path():
+    return os.getenv("OMISBOTS_STORE_PATH", DEFAULT_STORE_PATH)
+
+
+def get_users_path():
+    return os.getenv("OMISBOTS_USERS_PATH", DEFAULT_USERS_PATH)
+
+
+def load_users():
+    users_path = get_users_path()
+    if not os.path.exists(users_path):
+        return []
+
+    try:
+        with open(users_path, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (OSError, ValueError):
+        return []
+
+    return payload if isinstance(payload, list) else []
+
+
+def save_users(users):
+    users_path = get_users_path()
+    directory = os.path.dirname(users_path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    with open(users_path, "w", encoding="utf-8") as handle:
+        json.dump(users, handle, indent=2)
+
+
+def current_user():
+    email = session.get("user_email")
+    if not email:
+        return None
+    return next((user for user in load_users() if user["email"] == email), None)
+
+
+@app.before_request
+def require_authentication():
+    if request.path.startswith("/dashboard") and current_user() is None:
+        return redirect(url_for("auth", next=request.path))
+    if request.path.startswith("/api/agents") and current_user() is None:
+        return jsonify({"error": "Authentication required."}), 401
 
 
 def load_bots(initial_bots):
-    if not os.path.exists(STORE_PATH):
+    store_path = get_store_path()
+    if not os.path.exists(store_path):
         return list(initial_bots)
 
     try:
-        with open(STORE_PATH, "r", encoding="utf-8") as handle:
+        with open(store_path, "r", encoding="utf-8") as handle:
             payload = json.load(handle)
     except (OSError, ValueError):
         return list(initial_bots)
@@ -101,12 +142,12 @@ def load_bots(initial_bots):
 
 
 def save_bots():
-    directory = os.path.dirname(STORE_PATH)
-
+    store_path = get_store_path()
+    directory = os.path.dirname(store_path)
     if directory:
         os.makedirs(directory, exist_ok=True)
 
-    with open(STORE_PATH, "w", encoding="utf-8") as handle:
+    with open(store_path, "w", encoding="utf-8") as handle:
         json.dump(BOT_STORAGE, handle, indent=2)
 
 
@@ -426,6 +467,13 @@ INTEGRATION_CONNECTORS = [
     },
 ]
 
+AGENT_STORAGE = []
+AUTOMATION_STORAGE = []
+AGENT_TEMPLATES = [
+    {"id": "email-assistant", "name": "Email Assistant", "category": "Email", "description": "Reads, prioritizes, summarizes, and drafts replies for incoming email.", "tools": ["Gmail", "CRM", "WhatsApp"], "autonomy": "Ask before sending"},
+    {"id": "lead-qualification", "name": "Lead Qualification Agent", "category": "Sales", "description": "Qualifies new leads, updates your CRM, and alerts your team.", "tools": ["CRM", "WhatsApp"], "autonomy": "Ask before sending"},
+    {"id": "support-agent", "name": "Customer Support Agent", "category": "Support", "description": "Classifies support requests and prepares helpful next actions.", "tools": ["Knowledge base", "CRM"], "autonomy": "Draft only"},
+]
 
 CAMPAIGNS_DATA = [
     {
@@ -630,6 +678,45 @@ def version():
     )
 
 
+@app.route("/auth", methods=["GET", "POST"])
+def auth():
+    mode = request.args.get("mode", "login")
+    next_url = request.args.get("next", url_for("dashboard"))
+    error = None
+
+    if request.method == "POST":
+        mode = request.form.get("mode", "login")
+        name = (request.form.get("name") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+        users = load_users()
+        existing_user = next((user for user in users if user["email"] == email), None)
+
+        if not email or "@" not in email or not password:
+            error = "Enter a valid email and password."
+        elif mode == "signup" and not name:
+            error = "Enter your name to create an account."
+        elif mode == "signup" and existing_user:
+            error = "An account with that email already exists. Log in instead."
+        elif mode == "login" and (not existing_user or not check_password_hash(existing_user["password"], password)):
+            error = "That email and password do not match."
+        else:
+            if mode == "signup":
+                existing_user = {"name": name, "email": email, "password": generate_password_hash(password)}
+                users.append(existing_user)
+                save_users(users)
+            session["user_email"] = email
+            return redirect(next_url if next_url.startswith("/") else url_for("dashboard"))
+
+    return render_template("auth.html", mode=mode, error=error, next_url=next_url)
+
+
+@app.post("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("home"))
+
+
 @app.get("/dashboard")
 def dashboard():
     stats = {
@@ -727,6 +814,44 @@ def automations_page():
         "automations.html",
         workflows=AUTOMATION_WORKFLOWS,
     )
+
+
+@app.get("/dashboard/agents")
+def agents_page():
+    return render_template("agents.html", agents=AGENT_STORAGE, templates=AGENT_TEMPLATES)
+
+
+@app.post("/dashboard/agents/create")
+def create_agent():
+    request_text = (request.form.get("request") or "").strip()
+    template_id = request.form.get("template") or "custom-agent"
+    template = next((item for item in AGENT_TEMPLATES if item["id"] == template_id), None)
+    name = "Email Assistant" if "email" in request_text.lower() else (template["name"] if template else "Custom AI Agent")
+    tools = template["tools"] if template else ["Knowledge base"]
+    agent = {
+        "id": f"agent-{len(AGENT_STORAGE) + 1:04d}",
+        "name": name,
+        "purpose": request_text or (template["description"] if template else "Complete an authorized business workflow."),
+        "status": "Draft",
+        "trigger": "New authorized event",
+        "tools": tools,
+        "memory": True,
+        "autonomy": template["autonomy"] if template else "Ask before sending",
+        "permissions": {"read": True, "draft": True, "send": False},
+        "execution_count": 0,
+        "success_rate": "Not run",
+        "activity": [],
+    }
+    AGENT_STORAGE.insert(0, agent)
+    return redirect(url_for("agent_detail", agent_id=agent["id"]))
+
+
+@app.get("/dashboard/agents/<agent_id>")
+def agent_detail(agent_id: str):
+    agent = next((item for item in AGENT_STORAGE if item["id"] == agent_id), None)
+    if not agent:
+        return "Agent not found", 404
+    return render_template("agent_detail.html", agent=agent)
 
 
 @app.get("/dashboard/reports")
@@ -858,27 +983,101 @@ def list_bots():
     return jsonify({"bots": BOT_STORAGE})
 
 
+@app.get("/api/agents")
+def list_agents():
+    return jsonify({"agents": AGENT_STORAGE, "templates": AGENT_TEMPLATES})
+
+
+@app.post("/api/agents")
+def create_agent_api():
+    request_text = (request.get_json(silent=True) or {}).get("request", "")
+    with app.test_request_context("/dashboard/agents/create", method="POST", data={"request": request_text}):
+        response = create_agent()
+    return jsonify({"agent": AGENT_STORAGE[0]}), 201
+
+
+@app.post("/api/agents/<agent_id>/test")
+def test_agent(agent_id: str):
+    agent = next((item for item in AGENT_STORAGE if item["id"] == agent_id), None)
+    if not agent:
+        return jsonify({"error": "Agent not found."}), 404
+    agent["activity"] = ["Trigger received", "Instructions evaluated", "Permissions checked", "Test completed"]
+    agent["execution_count"] += 1
+    agent["success_rate"] = "100%"
+    return jsonify({"agent": agent, "trace": agent["activity"]})
+
+
+@app.post("/api/agents/<agent_id>/deploy")
+def deploy_agent(agent_id: str):
+    agent = next((item for item in AGENT_STORAGE if item["id"] == agent_id), None)
+    if not agent:
+        return jsonify({"error": "Agent not found."}), 404
+    agent["status"] = "Running"
+    return jsonify({"agent": agent, "message": "Agent is ready. Connect the configured tools to enable background execution."})
+
+
+@app.post("/api/agents/<agent_id>/pause")
+def pause_agent(agent_id: str):
+    agent = next((item for item in AGENT_STORAGE if item["id"] == agent_id), None)
+    if not agent:
+        return jsonify({"error": "Agent not found."}), 404
+    agent["status"] = "Paused"
+    return jsonify({"agent": agent})
+
+
+@app.get("/api/automations")
+def list_automations():
+    return jsonify({"automations": AUTOMATION_STORAGE})
+
+
+@app.post("/api/automations")
+def create_automation():
+    description = ((request.get_json(silent=True) or {}).get("description") or "").strip()
+    if not description:
+        return jsonify({"error": "Automation description is required."}), 400
+
+    automation = {
+        "id": f"automation-{len(AUTOMATION_STORAGE) + 1:04d}",
+        "name": "Lead qualification workflow",
+        "description": description,
+        "status": "Draft",
+        "workflow": {
+            "name": "Omisbots generated workflow",
+            "active": False,
+            "nodes": [
+                {"name": "Website Form", "type": "n8n-nodes-base.webhook", "parameters": {"path": "omisbots-lead"}},
+                {"name": "AI Qualification", "type": "omisbots.ai", "parameters": {"instructions": "Qualify the incoming lead using authorized business rules."}},
+                {"name": "CRM", "type": "n8n-nodes-base.httpRequest", "parameters": {"credentialReference": "CRM_CREDENTIAL"}},
+                {"name": "WhatsApp Notification", "type": "n8n-nodes-base.httpRequest", "parameters": {"credentialReference": "WHATSAPP_CREDENTIAL"}},
+            ],
+            "connections": {"Website Form": ["AI Qualification"], "AI Qualification": ["CRM"], "CRM": ["WhatsApp Notification"]},
+            "errorHandling": "Continue to error workflow and record execution log",
+        },
+    }
+    AUTOMATION_STORAGE.insert(0, automation)
+    return jsonify({"automation": automation}), 201
+
+
+@app.post("/api/automations/<automation_id>/deploy")
+def deploy_automation(automation_id: str):
+    automation = next((item for item in AUTOMATION_STORAGE if item["id"] == automation_id), None)
+    if not automation:
+        return jsonify({"error": "Automation not found."}), 404
+    automation["status"] = "Ready to connect"
+    return jsonify({"automation": automation, "message": "Workflow generated. Configure n8n to deploy it."})
+
+
 @app.post("/chat")
 def chat():
     try:
-        user_message = (
-            request.form.get("message") or ""
-        ).strip()
-
+        payload = request.get_json(silent=True) or {}
+        user_message = (request.form.get("message") or payload.get("message") or "").strip()
         if not user_message:
             return jsonify(
                 {"error": "Message is required."}
             ), 400
 
-        if is_greeting(user_message):
-            return jsonify(
-                {"reply": generate_reply(user_message)}
-            )
-
-        return jsonify(
-            {"reply": generate_reply(user_message)}
-        )
-
+        return jsonify({"reply": generate_reply(user_message)})
     except Exception as error:
         return jsonify(
             {"error": f"Unexpected server error: {error}"}

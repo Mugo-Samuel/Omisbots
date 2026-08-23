@@ -312,3 +312,177 @@ labComposer.addEventListener("submit", (event) => {
 
 renderMessages(activeBot);
 renderLabStarter();
+
+const agentWorkText = document.querySelector("#agentWorkText");
+const metricCounters = document.querySelectorAll("[data-count]");
+const workPhrases = [
+  "Hello! Thanks for contacting Omisbots. How can I help you today?",
+  "I've identified 3 potential customers and added them to your sales pipeline.",
+  "Creating automated follow-up...",
+  "Automation completed ✓"
+];
+
+function runAgentWork(index = 0) {
+  if (!agentWorkText) return;
+  const phrase = workPhrases[index % workPhrases.length];
+  agentWorkText.textContent = "";
+  let character = 0;
+
+  const typeNext = () => {
+    agentWorkText.textContent = phrase.slice(0, character);
+    character += 1;
+    if (character <= phrase.length) {
+      window.setTimeout(typeNext, character === phrase.length ? 1200 : 24);
+    } else {
+      window.setTimeout(() => runAgentWork(index + 1), 550);
+    }
+  };
+
+  typeNext();
+}
+
+function animateMetricCounters() {
+  metricCounters.forEach((counter) => {
+    const target = Number(counter.dataset.count);
+    const started = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - started) / 1300, 1);
+      counter.textContent = Math.floor(progress * target).toLocaleString();
+      if (progress < 1) window.requestAnimationFrame(tick);
+    };
+    window.requestAnimationFrame(tick);
+  });
+}
+
+runAgentWork();
+if (metricCounters.length) {
+  const counterObserver = new IntersectionObserver((entries, observer) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      animateMetricCounters();
+      observer.disconnect();
+    }
+  }, { threshold: 0.35 });
+  const metricGrid = document.querySelector(".metric-grid");
+  if (metricGrid) counterObserver.observe(metricGrid);
+}
+
+const architecturePillars = document.querySelectorAll(".architecture-pillar");
+const architectureActivity = document.querySelector("#architectureActivity");
+const activityMessages = [
+  "Reading incoming email...",
+  "Identifying priority...",
+  "Updating CRM...",
+  "Sending WhatsApp response...",
+  "Workflow completed ✓"
+];
+
+architecturePillars.forEach((pillar) => {
+  ["mouseenter", "focus"].forEach((eventName) => {
+    pillar.addEventListener(eventName, () => pillar.classList.add("is-active"));
+  });
+  ["mouseleave", "blur"].forEach((eventName) => {
+    pillar.addEventListener(eventName, () => pillar.classList.remove("is-active"));
+  });
+});
+
+if (architectureActivity) {
+  let activityIndex = 0;
+  window.setInterval(() => {
+    activityIndex = (activityIndex + 1) % activityMessages.length;
+    const nextMessage = document.createElement("p");
+    nextMessage.textContent = activityMessages[activityIndex];
+    architectureActivity.appendChild(nextMessage);
+    if (architectureActivity.children.length > 5) architectureActivity.removeChild(architectureActivity.firstElementChild);
+  }, 2200);
+}
+
+const masonScene = document.querySelector(".mason-scene");
+const masonRobot = document.querySelector("#masonRobot");
+const masonLetters = [...document.querySelectorAll("#masonWord span")];
+const masonStatus = document.querySelector("#masonStatus");
+
+async function wait(milliseconds) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+async function buildMasonWord() {
+  if (!masonScene || !masonRobot || masonLetters.length === 0) return;
+  masonLetters.forEach((letter) => letter.classList.remove("is-placed", "is-carrying"));
+  masonScene.classList.remove("is-complete");
+  masonRobot.style.left = "-10px";
+
+  for (let index = 0; index < masonLetters.length; index += 1) {
+    const letter = masonLetters[index];
+    const target = letter.offsetLeft + letter.offsetWidth / 2 - masonRobot.offsetWidth / 2;
+    masonStatus.textContent = `Picking ${letter.dataset.letter} block...`;
+    await wait(420);
+    letter.classList.add("is-carrying");
+    masonRobot.classList.add("is-working");
+    masonRobot.style.left = `${Math.max(0, target)}px`;
+    await wait(720);
+    letter.classList.remove("is-carrying");
+    letter.classList.add("is-placed");
+    masonRobot.classList.remove("is-working");
+    masonStatus.textContent = `${letter.dataset.letter} placed`;
+    await wait(240);
+  }
+
+  masonScene.classList.add("is-complete");
+  masonStatus.textContent = "OMISBOTS assembled";
+  await wait(2600);
+  buildMasonWord();
+}
+
+buildMasonWord();
+
+const assistantToggle = document.querySelector("#assistantToggle");
+const assistantClose = document.querySelector("#assistantClose");
+const assistantPanel = document.querySelector("#assistantPanel");
+const assistantForm = document.querySelector("#assistantForm");
+const assistantInput = document.querySelector("#assistantInput");
+const assistantMessages = document.querySelector("#assistantMessages");
+
+function setAssistantOpen(isOpen) {
+  if (!assistantPanel || !assistantToggle) return;
+  assistantPanel.classList.toggle("is-open", isOpen);
+  assistantPanel.setAttribute("aria-hidden", String(!isOpen));
+  assistantToggle.setAttribute("aria-expanded", String(isOpen));
+  if (isOpen && assistantInput) assistantInput.focus();
+}
+
+function addAssistantMessage(message, speaker) {
+  const bubble = document.createElement("div");
+  bubble.className = `assistant-message assistant-message--${speaker}`;
+  bubble.textContent = message;
+  assistantMessages.appendChild(bubble);
+  assistantMessages.scrollTop = assistantMessages.scrollHeight;
+  return bubble;
+}
+
+assistantToggle?.addEventListener("click", () => setAssistantOpen(!assistantPanel.classList.contains("is-open")));
+assistantClose?.addEventListener("click", () => setAssistantOpen(false));
+
+assistantForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const message = assistantInput.value.trim();
+  if (!message) return;
+  addAssistantMessage(message, "user");
+  assistantInput.value = "";
+  const typing = addAssistantMessage("Thinking...", "typing");
+
+  try {
+    const response = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json" },
+      body: new URLSearchParams({ message })
+    });
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) throw new Error("Assistant returned an invalid response.");
+    const payload = await response.json();
+    typing.remove();
+    addAssistantMessage(response.ok && payload.reply ? payload.reply : (payload.error || "I couldn't process that just now. Please try again."), "bot");
+  } catch (error) {
+    typing.remove();
+    addAssistantMessage("The assistant is temporarily unavailable. Please try again in a moment.", "bot");
+  }
+});

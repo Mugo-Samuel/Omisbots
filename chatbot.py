@@ -71,6 +71,11 @@ BOT_LIBRARY = {
         "thanks": "You're welcome! Anything else you'd like to know?",
         "goodbye": "Thanks for chatting — reach out any time you're ready to build.",
         "topics": [
+            {"keywords": ["what do you do", "what does omisbots do", "about omisbots", "what is omisbots", "how does omisbots work"], "reply": "Omisbots connects customer-facing bots, intelligent AI agents, and business automations in one system. We help teams answer customers, capture leads, use business knowledge, and move work through tools like Gmail, CRMs, WhatsApp, and n8n."},
+            {"keywords": ["bot", "website bot", "whatsapp bot", "telegram bot", "customer facing"], "reply": "Our bots meet customers on your website, WhatsApp, or Telegram. They can answer questions, collect details, qualify leads, and hand conversations to your team when needed."},
+            {"keywords": ["ai agent", "agents", "rag", "memory", "tools", "intelligent agent"], "reply": "AI agents reason over your instructions and business knowledge, remember useful context, and use tools to complete tasks instead of only sending replies."},
+            {"keywords": ["n8n", "gmail", "crm", "business systems", "integrate", "integration"], "reply": "Automations connect Omisbots to systems such as Gmail, your CRM, WhatsApp, and n8n. For example: a new email can be classified by AI, added to a CRM, and followed up on WhatsApp."},
+            {"keywords": ["start", "get started", "build my bot", "create an agent", "sign up"], "reply": "Create an Omisbots account to open your workspace. From there you can create a bot, choose a workflow, and shape an agent around the work your business needs done."},
             {"keywords": ["price", "pricing", "cost", "charge", "budget", "$"], "reply": "Chatbot development usually ranges from $200 to $800 depending on channels, integrations, and conversation depth."},
             {"keywords": ["contact", "email", "call", "reach"], "reply": f"You can reach us at {CONTACT_EMAIL}. Share what you want the bot to do and which channel you need."},
             {"keywords": ["automation", "automate", "workflow", "reminder"], "reply": "We can automate lead alerts, follow-up messages, appointment reminders, spreadsheet updates, CRM handoffs, and simple reporting flows."},

@@ -240,6 +240,7 @@
         <a class="brand" href="/">Omisbots</a>
         <nav class="nav" aria-label="Main navigation">
           <a href="/dashboard">Dashboard</a>
+          <a href="{{ url_for('agents_page') }}">AI Agents</a>
           <a href="/dashboard/leads">Leads</a>
           <a href="/dashboard/conversations">Conversations</a>
           <a href="/dashboard/analytics">Analytics</a>
@@ -258,6 +259,9 @@
           <a href="/dashboard/deployments">Deployments</a>
           <a href="/dashboard/automations">Automations</a>
           <a href="/dashboard/settings">Settings</a>
+          <form method="post" action="{{ url_for('logout') }}" style="display:inline; margin:0;">
+            <button type="submit" style="border:0; background:none; color:inherit; cursor:pointer; font:inherit; padding:0;">Log out</button>
+          </form>
         </nav>
       </header>
 
