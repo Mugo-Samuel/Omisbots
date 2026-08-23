@@ -1125,7 +1125,9 @@ body { background: #f3f5f6; color: #20252b; }
 /* Warm beige public canvas with readable charcoal type */
 .landing-page { background: #F9F6EE; color: #24201b; }
 .landing-page .bg-orbs span { opacity: .07; }
-.landing-page .topbar, .landing-page .topbar.is-scrolled { background: rgba(186,200,177,.94); border-color: rgba(36,32,27,.18); }
+.landing-page .topbar, .landing-page .topbar.is-scrolled { width: 100vw; left: 0; right: 0; transform: none; border-radius: 0; margin: 0; min-height: 36px; padding: 8px 18px; background: rgba(186,200,177,.94); border-color: rgba(36,32,27,.18); }
+.landing-page .topbar.is-scrolled { transform: translateY(-100px); }
+.landing-page .architecture-hero { padding-top: 96px; }
 .landing-page .brand, .landing-page .nav-links a, .landing-page .hero h1, .landing-page .section-heading h2, .landing-page .architecture-intro h1, .landing-page .architecture-intro h1 span, .landing-page .section-heading h2 span, .landing-page .eyebrow { color: #24201b; }
 .landing-page .brand-mark { border-color: #24201b; color: #24201b; box-shadow: 0 0 18px rgba(36,32,27,.12); }
 .landing-page .hero__text, .landing-page .architecture-intro > p:not(.eyebrow), .landing-page .section-heading p:last-child, .landing-page .agent-card > p:not(.agent-label), .landing-page .final-cta > div > p:last-child { color: #51483e; }
@@ -1163,6 +1165,12 @@ body { background: #f3f5f6; color: #20252b; }
 .landing-page .metric-card strong { font-size: 2.45rem; }
 .landing-page .metric-card em { font-size: .76rem; }
 .landing-page .stream-heading { font-size: .84rem; }
+
+@media (max-width: 580px) {
+  .landing-page .topbar,
+  .landing-page .topbar.is-scrolled { padding: 7px 12px; }
+  .landing-page .architecture-hero { padding-top: 84px; }
+}
 .landing-page .stream-row { font-size: .88rem; }
 .landing-page .stream-row time { font-size: .76rem; }
 
