@@ -1166,6 +1166,18 @@ body { background: #f3f5f6; color: #20252b; }
 .landing-page .metric-card em { font-size: .76rem; }
 .landing-page .stream-heading { font-size: .84rem; }
 
+/* Services and demo copy in solid black for readability */
+.landing-page #services .eyebrow,
+.landing-page #services .section-heading h2,
+.landing-page #services .service-lines h3,
+.landing-page #services .service-lines p,
+.landing-page #demo .eyebrow,
+.landing-page #demo .section-heading h2,
+.landing-page #demo .section-heading p,
+.landing-page #demo .bot-card,
+.landing-page #demo .bot-card strong,
+.landing-page #demo .bot-card small { color: #000; }
+
 @media (max-width: 580px) {
   .landing-page .topbar,
   .landing-page .topbar.is-scrolled { padding: 7px 12px; }
