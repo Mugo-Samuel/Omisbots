@@ -1195,7 +1195,7 @@ body { background: #f3f5f6; color: #20252b; }
 .landing-page .stream-row time { font-size: .76rem; }
 
 /* Keep the first message close to the fixed navigation. */
-.landing-page .architecture-hero { padding-top: 68px; }
+.landing-page .architecture-hero { padding-top: 56px; }
 
 /* Light, local motion system for the public landing page. */
 .landing-page {

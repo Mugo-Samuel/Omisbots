@@ -257,6 +257,7 @@ function addLabMessage(speaker, text) {
 }
 
 function renderLabStarter() {
+  if (!labChatLog) return;
   labChatLog.innerHTML = "";
   labStarterMessages.forEach(([speaker, text]) => addLabMessage(speaker, text));
 }
@@ -293,7 +294,7 @@ composer.addEventListener("submit", (event) => {
   }, 900);
 });
 
-labComposer.addEventListener("submit", (event) => {
+labComposer?.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const message = labMessageInput.value.trim();
@@ -459,7 +460,10 @@ function addAssistantMessage(message, speaker) {
   return bubble;
 }
 
-assistantToggle?.addEventListener("click", () => setAssistantOpen(!assistantPanel.classList.contains("is-open")));
+assistantToggle?.addEventListener("click", () => {
+  if (!assistantPanel) return;
+  setAssistantOpen(!assistantPanel.classList.contains("is-open"));
+});
 assistantClose?.addEventListener("click", () => setAssistantOpen(false));
 
 assistantForm?.addEventListener("submit", async (event) => {
