@@ -221,8 +221,6 @@
   </style>
 </head>
 <body class="landing-page">
-  <div id="vanta-globe" aria-hidden="true"></div>
-
   <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
 
   <main class="site-shell">
@@ -406,27 +404,6 @@
   </div>
 
   <script src="{{ url_for('static', filename='app.js') }}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (window.VANTA) {
-        window.VANTA.GLOBE({
-          el: "#vanta-globe",
-          mouseControls: true,
-          touchControls: true,
-          gyroControls: false,
-          minHeight: 200.00,
-          minWidth: 200.00,
-          scale: 1.00,
-          scaleMobile: 1.00,
-          color: 0x120308,
-          color2: 0x261e1e,
-          backgroundColor: 0xF9F6EE
-        });
-      }
-    });
-  </script>
   <script>
   let lastScrollY = window.scrollY;
   const topbar = document.getElementById('topbar');
