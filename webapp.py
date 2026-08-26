@@ -1,6 +1,8 @@
 import json
 import os
+import re
 from datetime import datetime
+from urllib.parse import urlparse
 
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -117,7 +119,7 @@ def current_user():
 def require_authentication():
     if request.path.startswith("/dashboard") and current_user() is None:
         return redirect(url_for("auth", next=request.path))
-    if request.path.startswith("/api/agents") and current_user() is None:
+    if request.path.startswith(("/api/agents", "/api/bot-template")) and current_user() is None:
         return jsonify({"error": "Authentication required."}), 401
 
 
@@ -149,6 +151,44 @@ def save_bots():
 
     with open(store_path, "w", encoding="utf-8") as handle:
         json.dump(BOT_STORAGE, handle, indent=2)
+
+
+def build_bot_template(website):
+    parsed = urlparse(website if "//" in website else f"https://{website}")
+    hostname = (parsed.hostname or "").lower()
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not hostname
+        or not re.fullmatch(r"[a-zA-Z0-9.-]+", hostname)
+    ):
+        return None
+
+    business_name = re.sub(
+        r"[^a-zA-Z0-9]+",
+        " ",
+        hostname.removeprefix("www.").split(".")[0],
+    ).strip()
+    for suffix in ("clinic", "hospital", "school", "academy", "support"):
+        if business_name.lower().endswith(suffix) and len(business_name) > len(suffix):
+            business_name = f"{business_name[:-len(suffix)]} {suffix}"
+            break
+    business_name = business_name.title() or "Website"
+    website_text = f"{hostname} {parsed.path}".lower()
+
+    template = BOT_TEMPLATES[0]
+    if any(word in website_text for word in ("hospital", "clinic", "health", "medical")):
+        template = next(item for item in BOT_TEMPLATES if item["id"] == "hospital")
+    elif any(word in website_text for word in ("school", "academy", "college", "university")):
+        template = next(item for item in BOT_TEMPLATES if item["id"] == "school")
+    elif any(word in website_text for word in ("support", "help", "service")):
+        template = next(item for item in BOT_TEMPLATES if item["id"] == "support")
+
+    return {
+        "name": f"{business_name} Assistant",
+        "template": template["name"],
+        "description": template["description"],
+        "website": parsed.geturl(),
+    }
 
 
 BOT_STORAGE = load_bots(BOT_STORAGE)
@@ -976,6 +1016,18 @@ def create_bot():
             bot_id=bot["id"],
         )
     )
+
+
+@app.post("/api/bot-template")
+def generate_bot_template():
+    payload = request.get_json(silent=True) or request.form
+    website = (payload.get("website") or "").strip()
+    template = build_bot_template(website)
+
+    if not template:
+        return jsonify({"error": "Enter a valid website URL, such as https://example.com."}), 400
+
+    return jsonify({"template": template})
 
 
 @app.get("/api/bots")

@@ -227,6 +227,49 @@
         margin-top: 8px;
       }
 
+      .url-builder {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        margin-bottom: 16px;
+        border: 1px solid #ddd6fe;
+        border-radius: 14px;
+        background: #faf5ff;
+      }
+
+      .url-builder p, .generated-template p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+
+      .url-builder button {
+        justify-self: start;
+        padding: 9px 12px;
+        border: 1px solid #c4b5fd;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--primary);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .generated-template {
+        display: none;
+        padding: 12px;
+        border-left: 3px solid var(--primary);
+        background: #fff;
+      }
+
+      .generated-template.is-visible { display: grid; gap: 4px; }
+
+      .builder-status {
+        min-height: 1.2em;
+        color: #b91c1c;
+        font-size: 0.82rem;
+      }
+
       @media (max-width: 800px) {
         .content-grid {
           grid-template-columns: 1fr;
@@ -326,20 +369,35 @@
             <h2>Create Your Bot</h2>
           </div>
 
+          <div class="url-builder">
+            <strong>Start with your website</strong>
+            <p>Paste your URL and we will prepare a chatbot template for your business.</p>
+            <label>
+              <span>Website URL</span>
+              <input id="templateWebsite" type="url" placeholder="https://examplebusiness.com" required />
+            </label>
+            <button id="generateTemplate" type="button">Generate template</button>
+            <div id="builderStatus" class="builder-status" role="status" aria-live="polite"></div>
+            <div id="generatedTemplate" class="generated-template" aria-live="polite">
+              <strong id="generatedName"></strong>
+              <p id="generatedDescription"></p>
+            </div>
+          </div>
+
           <form action="/dashboard/create-bot" method="post">
             <label>
               <span>Bot name</span>
-              <input name="name" type="text" placeholder="Northview Clinic Bot" required />
+              <input id="botName" name="name" type="text" placeholder="Northview Clinic Bot" required />
             </label>
 
             <label>
               <span>Business website</span>
-              <input name="website" type="url" placeholder="https://examplebusiness.com" required />
+              <input id="botWebsite" name="website" type="url" placeholder="https://examplebusiness.com" required />
             </label>
 
             <label>
               <span>Template</span>
-              <select name="template">
+              <select id="botTemplate" name="template">
                 {% for template in templates %}
                 <option value="{{ template.name }}">{{ template.name }}</option>
                 {% endfor %}
@@ -395,5 +453,45 @@
         </div>
       </section>
     </main>
+    <script>
+      const templateWebsite = document.querySelector("#templateWebsite");
+      const generateTemplate = document.querySelector("#generateTemplate");
+      const botName = document.querySelector("#botName");
+      const botWebsite = document.querySelector("#botWebsite");
+      const botTemplate = document.querySelector("#botTemplate");
+      const generatedTemplate = document.querySelector("#generatedTemplate");
+      const generatedName = document.querySelector("#generatedName");
+      const generatedDescription = document.querySelector("#generatedDescription");
+      const builderStatus = document.querySelector("#builderStatus");
+
+      generateTemplate.addEventListener("click", async () => {
+        builderStatus.textContent = "";
+        generatedTemplate.classList.remove("is-visible");
+        generateTemplate.disabled = true;
+        generateTemplate.textContent = "Generating...";
+
+        try {
+          const response = await fetch("{{ url_for('generate_bot_template') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ website: templateWebsite.value.trim() })
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error);
+
+          botName.value = result.template.name;
+          botWebsite.value = result.template.website;
+          botTemplate.value = result.template.template;
+          generatedName.textContent = `${result.template.name} · ${result.template.template}`;
+          generatedDescription.textContent = result.template.description;
+          generatedTemplate.classList.add("is-visible");
+        } catch (error) {
+          builderStatus.textContent = error.message || "We could not generate a template.";
+        } finally {
+          generateTemplate.disabled = false;
+          generateTemplate.textContent = "Generate template";
+        }
+      });
+    </script>
   </body>
 </html>

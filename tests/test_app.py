@@ -104,6 +104,30 @@ class OmisbotsAppTests(unittest.TestCase):
             content = handle.read()
         self.assertIn("Growth Pilot", content)
 
+    def test_generate_bot_template_from_website(self):
+        self.client.post(
+            "/auth",
+            data={"mode": "signup", "name": "Template Builder", "email": "template@example.com", "password": "secret123"},
+        )
+        response = self.client.post(
+            "/api/bot-template",
+            json={"website": "https://northviewclinic.com"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        template = response.get_json()["template"]
+        self.assertEqual(template["name"], "Northview Clinic Assistant")
+        self.assertEqual(template["template"], "Hospital Assistant")
+
+    def test_generate_bot_template_rejects_invalid_website(self):
+        self.client.post(
+            "/auth",
+            data={"mode": "signup", "name": "Template Builder", "email": "invalid@example.com", "password": "secret123"},
+        )
+        response = self.client.post("/api/bot-template", json={"website": "not a url"})
+
+        self.assertEqual(response.status_code, 400)
+
 
 if __name__ == "__main__":
     unittest.main()
