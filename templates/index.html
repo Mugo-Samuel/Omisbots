@@ -32,6 +32,101 @@
       z-index: 1;
     }
 
+    .public-builder {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 34px;
+      align-items: center;
+      padding: 46px 0;
+      border-top: 1px solid var(--line-dark);
+      border-bottom: 1px solid var(--line-dark);
+    }
+
+    .public-builder h2 {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font: 600 clamp(2rem, 4vw, 3.4rem)/1 "Space Grotesk", sans-serif;
+    }
+
+    .public-builder p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .public-builder__form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .public-builder__form label {
+      display: grid;
+      gap: 7px;
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .public-builder__form input {
+      width: 100%;
+      height: 46px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.82);
+      outline: none;
+    }
+
+    .public-builder__form input:focus {
+      border-color: var(--mint);
+      box-shadow: 0 0 0 3px rgba(10, 168, 137, 0.13);
+    }
+
+    .public-builder__form button {
+      height: 46px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--ink);
+      font: 700 0.78rem "DM Sans", sans-serif;
+      cursor: pointer;
+    }
+
+    .public-builder__result {
+      grid-column: 2;
+      display: none;
+      padding: 14px;
+      border-left: 3px solid var(--mint);
+      color: var(--ink);
+      background: rgba(227, 249, 243, 0.7);
+    }
+
+    .public-builder__result.is-visible {
+      display: grid;
+      gap: 5px;
+    }
+
+    .public-builder__result p {
+      font-size: 0.88rem;
+    }
+
+    .public-builder__status {
+      grid-column: 2;
+      min-height: 1.2em;
+      color: #a53b32;
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 760px) {
+      .public-builder { grid-template-columns: 1fr; gap: 20px; }
+      .public-builder__form { grid-template-columns: 1fr; }
+      .public-builder__result, .public-builder__status { grid-column: 1; }
+    }
+
     /* ==========================================================================
        POLISHED UPGRADES (Typography, Spacing, Mockups & Depth)
        ========================================================================== */
@@ -258,6 +353,27 @@
       <aside class="activity-panel"><div class="activity-header"><span><i class="live-dot"></i> AI ACTIVE</span><small>LIVE FEED</small></div><div class="activity-log" id="architectureActivity"><p>Reading incoming email...</p><p>Identifying priority...</p><p>Updating CRM...</p><p>Sending WhatsApp response...</p><p>Workflow completed ✓</p></div></aside>
     </section>
 
+    <section class="public-builder reveal" id="website-builder" aria-label="Create a chatbot from your website">
+      <div>
+        <p class="eyebrow">Start with your website</p>
+        <h2>Turn your site into a chatbot.</h2>
+        <p>Paste your web address and get a tailored chatbot template in seconds.</p>
+      </div>
+      <form class="public-builder__form" id="publicBuilderForm">
+        <label>
+          Website URL
+          <input id="publicWebsite" type="url" placeholder="https://yourbusiness.com" required />
+        </label>
+        <button id="publicBuilderButton" type="submit">Generate template</button>
+        <div id="publicBuilderStatus" class="public-builder__status" role="status" aria-live="polite"></div>
+        <div id="publicBuilderResult" class="public-builder__result" aria-live="polite">
+          <strong id="publicBuilderName"></strong>
+          <p id="publicBuilderDescription"></p>
+          <a class="button button--primary" href="{{ url_for('auth', mode='signup') }}">Create this bot</a>
+        </div>
+      </form>
+    </section>
+
     <section class="work-section reveal" id="solutions" aria-label="AI work dashboard">
       <div class="section-heading section-heading--split">
         <div><p class="eyebrow">Watch AI work</p><h2>Don't just automate.<br /><span>Watch AI work.</span></h2></div>
@@ -403,6 +519,42 @@
     <button class="assistant-dongle" id="assistantToggle" type="button" aria-label="Open Omisbots assistant" aria-controls="assistantPanel" aria-expanded="false"><span class="assistant-dongle__signal"></span><span class="assistant-dongle__face">O</span><small>Ask AI</small></button>
   </div>
 
+  <script>
+    const publicBuilderForm = document.querySelector("#publicBuilderForm");
+    const publicWebsite = document.querySelector("#publicWebsite");
+    const publicBuilderButton = document.querySelector("#publicBuilderButton");
+    const publicBuilderStatus = document.querySelector("#publicBuilderStatus");
+    const publicBuilderResult = document.querySelector("#publicBuilderResult");
+    const publicBuilderName = document.querySelector("#publicBuilderName");
+    const publicBuilderDescription = document.querySelector("#publicBuilderDescription");
+
+    publicBuilderForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      publicBuilderStatus.textContent = "";
+      publicBuilderResult.classList.remove("is-visible");
+      publicBuilderButton.disabled = true;
+      publicBuilderButton.textContent = "Generating...";
+
+      try {
+        const response = await fetch("{{ url_for('generate_bot_template') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ website: publicWebsite.value.trim() })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+
+        publicBuilderName.textContent = `${result.template.name} · ${result.template.template}`;
+        publicBuilderDescription.textContent = result.template.description;
+        publicBuilderResult.classList.add("is-visible");
+      } catch (error) {
+        publicBuilderStatus.textContent = error.message || "We could not generate a template.";
+      } finally {
+        publicBuilderButton.disabled = false;
+        publicBuilderButton.textContent = "Generate template";
+      }
+    });
+  </script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
   <script>
   let lastScrollY = window.scrollY;

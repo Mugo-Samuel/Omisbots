@@ -26,6 +26,16 @@ class OmisbotsAppTests(unittest.TestCase):
     def test_home_route(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
+        self.assertIn(b"publicBuilderForm", response.data)
+
+    def test_public_template_generator_does_not_require_login(self):
+        response = self.client.post(
+            "/api/bot-template",
+            json={"website": "https://northviewclinic.com"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["template"]["template"], "Hospital Assistant")
 
     def test_chat_accepts_form_and_json_requests(self):
         form_response = self.client.post("/chat", data={"message": "What does Omisbots do?"})

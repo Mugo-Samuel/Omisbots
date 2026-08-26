@@ -119,7 +119,7 @@ def current_user():
 def require_authentication():
     if request.path.startswith("/dashboard") and current_user() is None:
         return redirect(url_for("auth", next=request.path))
-    if request.path.startswith(("/api/agents", "/api/bot-template")) and current_user() is None:
+    if request.path.startswith("/api/agents") and current_user() is None:
         return jsonify({"error": "Authentication required."}), 401
 
 
