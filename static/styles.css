@@ -1197,10 +1197,10 @@ body { background: #f3f5f6; color: #20252b; }
 /* Keep the first message close to the fixed navigation. */
 .landing-page .architecture-hero { padding-top: 56px; }
 
-.landing-page .architecture-hero { align-items: start; padding-top: 48px; }
+.landing-page .architecture-hero { align-items: start; padding-top: 64px; }
 
 @media (max-width: 580px) {
-  .landing-page .architecture-hero { padding-top: 28px; }
+  .landing-page .architecture-hero { padding-top: 40px; }
 }
 
 /* Light, local motion system for the public landing page. */
