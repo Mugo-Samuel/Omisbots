@@ -1189,13 +1189,19 @@ body { background: #f3f5f6; color: #20252b; }
 @media (max-width: 580px) {
   .landing-page .topbar,
   .landing-page .topbar.is-scrolled { padding: 7px 12px; }
-  .landing-page .architecture-hero { padding-top: 64px; }
+  .landing-page .architecture-hero { padding-top: 28px; }
 }
 .landing-page .stream-row { font-size: .88rem; }
 .landing-page .stream-row time { font-size: .76rem; }
 
 /* Keep the first message close to the fixed navigation. */
 .landing-page .architecture-hero { padding-top: 56px; }
+
+.landing-page .architecture-hero { align-items: start; padding-top: 48px; }
+
+@media (max-width: 580px) {
+  .landing-page .architecture-hero { padding-top: 28px; }
+}
 
 /* Light, local motion system for the public landing page. */
 .landing-page {
